@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ActionItemStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+
+  meetings    Meeting[]
+  actionItems ActionItem[]
+}
+
+model Meeting {
+  id           String   @id @default(uuid())
+  title        String
+  participants String[]
+  meetingDate  DateTime
+  transcript   Json
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analysis    MeetingAnalysis?
+  actionItems ActionItem[]
+
+  @@index([userId])
+}
+
+model MeetingAnalysis {
+  id                  String   @id @default(uuid())
+  meetingId           String   @unique
+  summary             Json
+  actionItems         Json
+  decisions           Json
+  followUpSuggestions Json
+  createdAt           DateTime @default(now())
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+}
+
+model ActionItem {
+  id          String           @id @default(uuid())
+  title       String
+  description String?
+  assignee    String
+  dueDate     DateTime?
+  status      ActionItemStatus @default(PENDING)
+  meetingId   String?
+  userId      String
+  citations   Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  meeting   Meeting?      @relation(fields: [meetingId], references: [id], onDelete: SetNull)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminders ReminderLog[]
+
+  @@index([userId])
+  @@index([meetingId])
+  @@index([status])
+}
+
+model ReminderLog {
+  id           String   @id @default(uuid())
+  actionItemId String
+  sentAt       DateTime @default(now())
+  channel      String
+  recipient    String
+  message      String
+  success      Boolean
+  createdAt    DateTime @default(now())
+
+  actionItem ActionItem @relation(fields: [actionItemId], references: [id], onDelete: Cascade)
+
+  @@index([actionItemId])
+  @@index([sentAt])
+}
