@@ -217,17 +217,17 @@ curl http://localhost:3000/api/evaluation
 
 ---
 
-## Deployment (Railway)
+## Deployment (Render)
 
-1. **Create a project** at <https://railway.app> → *New Project* → *Deploy from GitHub repo* → select this repo.
-2. **Add PostgreSQL**: *New* → *Database* → *Add PostgreSQL*. Railway exposes a `DATABASE_URL` variable.
-3. **Set environment variables** on the service (Variables tab):
-   - `DATABASE_URL` and `DIRECT_URL` → your Postgres connection strings (for Railway's own Postgres plugin both can be `${{Postgres.DATABASE_URL}}`; for Supabase use the transaction pooler for `DATABASE_URL` and the session pooler for `DIRECT_URL`)
+1. **Create the service** at <https://render.com> → *New* → *Web Service* → *Build and deploy from a Git repository* → connect and select this repo.
+2. **Provision PostgreSQL**: *New* → *PostgreSQL*. Once created, copy its **Internal Database URL** (for `DATABASE_URL`) and **External Database URL** (for `DIRECT_URL`). Alternatively use Supabase: the transaction pooler for `DATABASE_URL` and the session pooler for `DIRECT_URL`.
+3. **Set environment variables** on the web service (Environment tab):
+   - `DATABASE_URL` and `DIRECT_URL` → your Postgres connection strings (Render's own Postgres, or Supabase pooler URLs as described above)
    - `JWT_SECRET`, `JWT_EXPIRES_IN`, `GROQ_API_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NODE_ENV=production`
-   - `PORT` is provided automatically by Railway.
-4. **Build & start** are defined in `railway.json` / `package.json`:
-   - Build: `npm install && npm run build`
-   - Start: `npm run db:migrate && npm start` (runs migrations on boot, then serves)
-5. Deploy. Once live, verify `https://<your-app>.up.railway.app/health` returns `{ "status": "UP" }` and open `/api/docs`.
+   - `PORT` is provided automatically by Render — the app already reads `process.env.PORT`.
+4. **Build & start commands** (set in the service's settings):
+   - Build Command: `npm install && npm run build`
+   - Start Command: `npm run db:migrate && npm start` (runs migrations on boot, then serves)
+5. Deploy. Once live, verify `https://<your-app>.onrender.com/health` returns `{ "status": "UP" }` and open `/api/docs`.
 
 > See [DECISIONS.md](DECISIONS.md), [AI_APPROACH.md](AI_APPROACH.md), [TESTING.md](TESTING.md), [CHANGELOG.md](CHANGELOG.md), and [CHECKLIST.md](CHECKLIST.md) for design rationale and verification details.
