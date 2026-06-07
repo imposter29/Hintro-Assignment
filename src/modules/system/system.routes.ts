@@ -16,9 +16,9 @@ const router = Router();
 router.get('/evaluation', (_req, res) => {
   sendSuccess(res, {
     candidateName: 'Rithwik Kuchana',
-    email: 'pylaprem@gmail.com',
+    email: 'rithwikkuchana@gmail.com',
     repositoryUrl: 'https://github.com/imposter29/Hintro-Assignment',
-    deployedUrl: 'https://hintro-assignment-production.up.railway.app',
+    deployedUrl: 'https://hintro-assignment-inlx.onrender.com',
     externalIntegration: 'Resend Email',
     features: [
       'Authentication',
